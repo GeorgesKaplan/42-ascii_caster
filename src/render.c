@@ -23,7 +23,6 @@ static int enable_raw_mode(struct termios *orig)
     struct termios raw = *orig;
     raw.c_lflag &= ~(ECHO | ICANON);
     raw.c_iflag &= ~(IXON | ICRNL);
-    raw.c_oflag &= ~(OPOST);
     raw.c_cc[VMIN] = 0;
     raw.c_cc[VTIME] = 0;
     if (tcsetattr(0, TCSAFLUSH, &raw) != 0)
