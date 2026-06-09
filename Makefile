@@ -1,5 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror -Iinclude
+LDFLAGS = -lm
 SRCS = $(wildcard src/*.c)
 OBJS = $(SRCS:.c=.o)
 NAME = bin/ft_ascii_caster
@@ -10,7 +11,7 @@ all: $(NAME)
 
 $(NAME): $(OBJS)
 	@mkdir -p $(dir $(NAME))
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LDFLAGS)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@

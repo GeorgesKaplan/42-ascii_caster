@@ -36,9 +36,7 @@ int main(int argc, char **argv)
     if (!map)
         return 1;
 
-    printf("Map loaded: %dx%d, player at (%d,%d) facing %c\n",
-           map->cols, map->rows, map->player_x, map->player_y, map->player_dir);
-
+    render_loop(map);
     free_map(map);
     return 0;
 }

@@ -18,6 +18,9 @@ typedef struct s_map
 t_map *parse_map(const char *path);
 void free_map(t_map *map);
 
+/* renderer */
+void render_loop(t_map *map);
+
 int validate_args(int argc, char **argv);
 int has_map_extension(const char *path);
 
