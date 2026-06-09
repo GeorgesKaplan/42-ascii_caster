@@ -19,7 +19,10 @@ t_map *parse_map(const char *path);
 void free_map(t_map *map);
 
 /* renderer */
-void render_loop(t_map *map);
+#define RENDER_DISTANCE 0
+#define RENDER_ORIENTATION 1
+
+void render_loop(t_map *map, int render_mode);
 
 int validate_args(int argc, char **argv);
 int has_map_extension(const char *path);

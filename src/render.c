@@ -11,6 +11,8 @@
 #define ROT_SPEED 0.08
 #define MINIMAP_WIDTH 15
 #define MINIMAP_HEIGHT 10
+#define RENDER_DISTANCE 0
+#define RENDER_ORIENTATION 1
 
 static void restore_terminal(const struct termios *saved)
 {
@@ -61,15 +63,32 @@ static int get_arrow_key(void)
     return 0;
 }
 
-static char choose_shade(int side, int stepX, int stepY)
+static char choose_shade(double dist, int side, int stepX, int stepY, int mode)
 {
-    char face;
-    if (side == 0)
-        face = (stepX == -1) ? 'W' : 'E';
+    if (mode == RENDER_ORIENTATION)
+    {
+        char face;
+        if (side == 0)
+            face = (stepX == -1) ? 'W' : 'E';
+        else
+            face = (stepY == -1) ? 'N' : 'S';
+        return face;
+    }
     else
-        face = (stepY == -1) ? 'N' : 'S';
-
-    return face;
+    {
+        char shade;
+        if (dist < 1.0)
+            shade = '@';
+        else if (dist < 2.0)
+            shade = '#';
+        else if (dist < 3.0)
+            shade = 'O';
+        else if (dist < 4.0)
+            shade = 'x';
+        else
+            shade = '.';
+        return shade;
+    }
 }
 
 static void draw_minimap(char *screen, t_map *map, double px, double py, double dirX, double dirY)
@@ -118,7 +137,7 @@ static int is_wall(t_map *map, int x, int y)
     return map->grid[y][x] == '1';
 }
 
-static void render_frame(t_map *map, double px, double py, double dirX, double dirY, double planeX, double planeY)
+static void render_frame(t_map *map, double px, double py, double dirX, double dirY, double planeX, double planeY, int render_mode)
 {
     static char screen[SCREEN_HEIGHT * (SCREEN_WIDTH + 1)];
     for (int y = 0; y < SCREEN_HEIGHT; ++y)
@@ -207,7 +226,7 @@ static void render_frame(t_map *map, double px, double py, double dirX, double d
         if (drawEnd >= SCREEN_HEIGHT)
             drawEnd = SCREEN_HEIGHT - 1;
 
-        char shade = choose_shade(side, stepX, stepY);
+        char shade = choose_shade(perpWallDist, side, stepX, stepY, render_mode);
         for (int y = drawStart; y <= drawEnd; ++y)
             screen[y * (SCREEN_WIDTH + 1) + x] = shade;
     }
@@ -246,7 +265,7 @@ static void move_player(t_map *map, double *px, double *py, double dirX, double 
         *py = ny;
 }
 
-void render_loop(t_map *map)
+void render_loop(t_map *map, int render_mode)
 {
     struct termios orig;
     if (!enable_raw_mode(&orig))
@@ -286,7 +305,7 @@ void render_loop(t_map *map)
     int running = 1;
     while (running)
     {
-        render_frame(map, posX, posY, dirX, dirY, planeX, planeY);
+        render_frame(map, posX, posY, dirX, dirY, planeX, planeY, render_mode);
         int c = read_input_char();
         if (c == 0)
         {
