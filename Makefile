@@ -5,7 +5,7 @@ SRCS = $(wildcard src/*.c)
 OBJS = $(SRCS:.c=.o)
 NAME = bin/ft_ascii_caster
 
-.PHONY: all clean fclean re run
+.PHONY: all clean fclean re run run-distance run-orientation run-o
 
 all: $(NAME)
 
@@ -26,3 +26,12 @@ re: fclean all
 
 run: all
 	./$(NAME) maps/classic.map
+
+run-distance: all
+	./$(NAME) maps/classic.map
+
+run-orientation: all
+	./$(NAME) --orientation maps/classic.map
+
+run-o: all
+	./$(NAME) -o maps/classic.map
