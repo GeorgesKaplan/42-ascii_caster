@@ -1,5 +1,6 @@
 #include "../include/ft_ascii_caster.h"
 #include <stdio.h>
+#include <string.h>
 
 int validate_args(int argc, char **argv)
 {
