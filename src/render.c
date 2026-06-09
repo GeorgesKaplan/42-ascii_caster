@@ -9,6 +9,8 @@
 #define SCREEN_HEIGHT 24
 #define MOVE_SPEED 0.12
 #define ROT_SPEED 0.08
+#define MINIMAP_WIDTH 15
+#define MINIMAP_HEIGHT 10
 
 static void restore_terminal(const struct termios *saved)
 {
@@ -68,6 +70,39 @@ static char choose_shade(int side, int stepX, int stepY)
         face = (stepY == -1) ? 'N' : 'S';
 
     return face;
+}
+
+static void draw_minimap(char *screen, t_map *map, double px, double py, double dirX, double dirY)
+{
+    int map_width = (map->cols < MINIMAP_WIDTH) ? map->cols : MINIMAP_WIDTH;
+    int map_height = (map->rows < MINIMAP_HEIGHT) ? map->rows : MINIMAP_HEIGHT;
+
+    for (int y = 0; y < map_height; ++y)
+    {
+        for (int x = 0; x < map_width; ++x)
+        {
+            char cell = map->grid[y][x];
+            char display = (cell == '1') ? '#' : ' ';
+            screen[y * (SCREEN_WIDTH + 1) + x] = display;
+        }
+    }
+
+    int player_map_x = (int)px;
+    int player_map_y = (int)py;
+    if (player_map_x >= 0 && player_map_x < map_width &&
+        player_map_y >= 0 && player_map_y < map_height)
+    {
+        char dir_char = 'P';
+        if (dirX > 0.5)
+            dir_char = '>';
+        else if (dirX < -0.5)
+            dir_char = '<';
+        else if (dirY > 0.5)
+            dir_char = 'v';
+        else if (dirY < -0.5)
+            dir_char = '^';
+        screen[player_map_y * (SCREEN_WIDTH + 1) + player_map_x] = dir_char;
+    }
 }
 
 static void draw_screen(const char *screen)
@@ -177,6 +212,7 @@ static void render_frame(t_map *map, double px, double py, double dirX, double d
             screen[y * (SCREEN_WIDTH + 1) + x] = shade;
     }
 
+    draw_minimap(screen, map, px, py, dirX, dirY);
     draw_screen(screen);
 }
 
