@@ -59,22 +59,15 @@ static int get_arrow_key(void)
     return 0;
 }
 
-static char choose_shade(double dist, int side)
+static char choose_shade(int side, int stepX, int stepY)
 {
-    char shade;
-    if (dist < 1.0)
-        shade = '@';
-    else if (dist < 2.0)
-        shade = '#';
-    else if (dist < 3.0)
-        shade = 'O';
-    else if (dist < 4.0)
-        shade = 'x';
+    char face;
+    if (side == 0)
+        face = (stepX == -1) ? 'W' : 'E';
     else
-        shade = '.';
-    if (side == 1 && shade != '.')
-        shade = (shade == '@') ? '#' : shade;
-    return shade;
+        face = (stepY == -1) ? 'N' : 'S';
+
+    return face;
 }
 
 static void draw_screen(const char *screen)
@@ -179,7 +172,7 @@ static void render_frame(t_map *map, double px, double py, double dirX, double d
         if (drawEnd >= SCREEN_HEIGHT)
             drawEnd = SCREEN_HEIGHT - 1;
 
-        char shade = choose_shade(perpWallDist, side);
+        char shade = choose_shade(side, stepX, stepY);
         for (int y = drawStart; y <= drawEnd; ++y)
             screen[y * (SCREEN_WIDTH + 1) + x] = shade;
     }
