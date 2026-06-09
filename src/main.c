@@ -32,7 +32,13 @@ int main(int argc, char **argv)
     if (!validate_args(argc, argv))
         return 1;
 
-    printf("Scaffold: validated args. Map: %s\n", argv[1]);
-    printf("Next: implement parser and raycaster.\n");
+    t_map *map = parse_map(argv[1]);
+    if (!map)
+        return 1;
+
+    printf("Map loaded: %dx%d, player at (%d,%d) facing %c\n",
+           map->cols, map->rows, map->player_x, map->player_y, map->player_dir);
+
+    free_map(map);
     return 0;
 }
